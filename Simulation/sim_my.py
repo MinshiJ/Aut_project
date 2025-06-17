@@ -254,10 +254,17 @@ def simulate_movement_duration(duration=15, frames_rendered=50):
     time_start = time.monotonic()
  
     while (time.monotonic() <= time_start + duration):
+        # 检查查看器是否仍在运行
+        if not viewer.is_running():
+            print("查看器已关闭，停止模拟")
+            return False
+        
         mujoco.mj_step(model, data)
         if frame_count % frames_rendered == 0:
             viewer.sync()
         frame_count += 1
+    
+    return True
 
 def simulate_movement_tol(target_site_name="", tol=1e-3, frames_rendered=50):
     frames_rendered = frames_rendered   
@@ -269,18 +276,67 @@ def simulate_movement_tol(target_site_name="", tol=1e-3, frames_rendered=50):
     target_site = data.site(target_site_name).xpos
  
     while any(np.abs(end_effector - target_site) >= tol):
+        # 检查查看器是否仍在运行
+        if not viewer.is_running():
+            print("查看器已关闭，停止模拟")
+            return False
+        
         mujoco.mj_step(model, data)
         if frame_count % frames_rendered == 0:
             viewer.sync()
         frame_count += 1
+        
+        # 更新末端执行器位置
+        end_effector = data.body("TCP").xpos
+    
+    return True
+
+def check_viewer_and_simulate_tol(target_site_name="", tol=1e-3):
+    """检查查看器状态并执行位置模拟，如果查看器关闭则返回 False"""
+    global simulation_continue
+    if not viewer.is_running():
+        print("查看器已关闭，取消模拟")
+        simulation_continue = False
+        return False
+    result = simulate_movement_tol(target_site_name, tol)
+    if not result:
+        simulation_continue = False
+    return result
+
+def check_viewer_and_simulate_duration(duration=15):
+    """检查查看器状态并执行时间模拟，如果查看器关闭则返回 False"""
+    global simulation_continue
+    if not viewer.is_running():
+        print("查看器已关闭，取消模拟")
+        simulation_continue = False
+        return False
+    result = simulate_movement_duration(duration)
+    if not result:
+        simulation_continue = False
+    return result
+
+def safe_simulate_tol(target_site_name="", tol=1e-3):
+    """安全执行位置模拟，自动检查查看器状态"""
+    global simulation_continue
+    if not simulation_continue or not viewer.is_running():
+        simulation_continue = False
+        return False
+    return simulate_movement_tol(target_site_name, tol)
+
+def safe_simulate_duration(duration=15):
+    """安全执行时间模拟，自动检查查看器状态"""
+    global simulation_continue
+    if not simulation_continue or not viewer.is_running():
+        simulation_continue = False
+        return False
+    return simulate_movement_duration(duration)
  
 def run_simulation_with_parameters(params):
-    global model, data, viewer
+    global model, data, viewer, simulation_continue
     
     # 获取重复次数
     repeat_count = params['simulation_repeats']
-    
-    # 重复运行模拟
+      # 重复运行模拟
     for run_num in range(1, repeat_count + 1):
         print(f"\n=== 开始第 {run_num}/{repeat_count} 次模拟 ===")
         
@@ -329,14 +385,17 @@ def run_simulation_with_parameters(params):
         model.jnt_stiffness[right_z_id] = params['z_stiffness'] * 1000
         model.jnt_stiffness[right_rotx_id] = params['rotx_stiffness']
         model.jnt_stiffness[right_roty_id] = params['roty_stiffness']
-        model.jnt_stiffness[right_rotz_id] = params['rotz_stiffness']
-
-        # 设置起始位置偏移
+        model.jnt_stiffness[right_rotz_id] = params['rotz_stiffness']        # 设置起始位置偏移
         startingpos_shift = params['starting_pos_shift']
 
         # 启动查看器
         viewer = mujoco.viewer.launch_passive(model, data)
-
+        
+        # 立即检查查看器是否成功启动
+        if not viewer.is_running():
+            print("查看器启动失败或被立即关闭，停止所有模拟")
+            break
+        
         # 显示接触力和接触点
         viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTPOINT] = True  
         viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTFORCE] = True  
@@ -345,7 +404,10 @@ def run_simulation_with_parameters(params):
         robotjoints = [28, 29, 30, 31, 32, 33]
         pos_home = np.array([3*np.pi/2, -np.pi/2, -np.pi/2, 3*np.pi/2, np.pi/2, 0, -0.01, 0.01])
 
-        if viewer.is_running():
+        # 模拟是否应该继续的标志
+        simulation_continue = True
+
+        if viewer.is_running() and simulation_continue:
             if xml == "scene_chamf.xml":
                 ### Camerapos.
                 viewer.cam.azimuth = -90
@@ -463,67 +525,82 @@ def run_simulation_with_parameters(params):
                 # start simulation in home position
                 data.qpos[[28, 29, 30, 31, 32, 33, 34, 41]] = pos_home
 
-                
-                ### RJ45 Above
+                  ### RJ45 Above
                 data.ctrl[:6] = pos_RJ45_above
                 gripper_state()
-                simulate_movement_tol(target_site_name="RJ45_above")
+                if not check_viewer_and_simulate_tol(target_site_name="RJ45_above"):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 above reached.")
                 
                 
                 ### RJ45 gripping
                 data.ctrl[:6] = pos_RJ45_gripping
                 gripper_state()
-                simulate_movement_tol(target_site_name="RJ45_gripping")
+                if not check_viewer_and_simulate_tol(target_site_name="RJ45_gripping"):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 gripping reached.")
-                
-                # close gripper
+                  # close gripper
                 gripper_state(state="closed", position=0.003)
-                simulate_movement_duration(5)
+                if not check_viewer_and_simulate_duration(5):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 gripped reached.")
                 
                 
                 ### RJ45 Above gripped
                 data.ctrl[:6] = pos_RJ45_above_gripped
                 gripper_state(state="closed", position=0.003)
-                simulate_movement_tol(target_site_name="RJ45_above_gripped")
+                if not check_viewer_and_simulate_tol(target_site_name="RJ45_above_gripped"):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 above gripped reached.")
                 
                 
                 ### SEARCH STRATEGY
-                
-                ### RJ45 angled
+                  ### RJ45 angled
                 data.ctrl[:6] = pos_RJ45_angled
                 gripper_state(state="closed", position=0.003)
-                simulate_movement_tol(target_site_name="RJ45_searchAngled", tol=1e-4)
+                if not safe_simulate_tol(target_site_name="RJ45_searchAngled", tol=1e-4):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 angled reached.")
                 
                 
                 # RJ45 Touch Z
                 data.ctrl[:6] = pos_RJ45_touchZ
                 gripper_state(state="closed", position=0.003)
-                simulate_movement_duration(10)
+                if not safe_simulate_duration(10):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 touchZ reached.")
                 
                 
                 ### Touch Back
                 data.ctrl[:6] = pos_RJ45_touchback
                 gripper_state(state="closed", position=0.003)
-                simulate_movement_duration(5)
+                if not safe_simulate_duration(5):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 touch back reached.")
                 
 
                 ### Touch Front
                 data.ctrl[:6] = pos_RJ45_touchfront
                 gripper_state(state="closed", position=0.003)
-                simulate_movement_duration(5)
+                if not safe_simulate_duration(5):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 touch front reached.")
 
 
                 ### Touch Side
                 data.ctrl[:6] = pos_RJ45_touchside
                 gripper_state(state="closed", position=0.003)
-                simulate_movement_duration(10)
+                if not safe_simulate_duration(10):
+                    simulation_continue = False
+                    break
                 print("Position RJ45 touch side reached.")
 
                 gripper_axis_right_id = mujoco.mj_name2id(model, 
@@ -537,13 +614,12 @@ def run_simulation_with_parameters(params):
                                                         mujoco.mjtObj.mjOBJ_JOINT, 
                                                         'gripper_axis_left_joint')
                 dof_left_id = model.jnt_dofadr[gripper_axis_left_id]
-                model.dof_armature[dof_left_id] = 1e7     
-
-
-                ### Assembly
+                model.dof_armature[dof_left_id] = 1e7                ### Assembly
                 data.ctrl[:6] = pos_RJ45_assembly
                 gripper_state(state="closed", position=0.003)
-                simulate_movement_duration(10)
+                if not safe_simulate_duration(10):
+                    simulation_continue = False
+                    break
                 print("RJ45 assembled.")
 
                 model.dof_armature[dof_right_id] = 0    
@@ -553,7 +629,9 @@ def run_simulation_with_parameters(params):
                 ### Assembled
                 data.ctrl[:6] = pos_RJ45_assembled
                 gripper_state()
-                simulate_movement_duration(10)
+                if not safe_simulate_duration(10):
+                    simulation_continue = False
+                    break
                 print("RJ45 assembly complete.")
             
             elif xml == "scene_15.xml":
@@ -678,11 +756,12 @@ def run_simulation_with_parameters(params):
                     data.qpos[[28, 29, 30, 31, 32, 33, 34, 41]] = pos_home
                     print("Home position reached.")
 
-                    
-                    ### USB Above
+                      ### USB Above
                     data.ctrl[:6] = pos_USB_above
                     gripper_state()
-                    simulate_movement_tol(target_site_name="USB_above")
+                    if not safe_simulate_tol(target_site_name="USB_above"):
+                        simulation_continue = False
+                        break
                     print("Position USB Above reached.")
 
 
@@ -690,19 +769,25 @@ def run_simulation_with_parameters(params):
                     ### USB gripping 
                     data.ctrl[:6] = pos_USB_gripping
                     gripper_state()
-                    simulate_movement_tol(target_site_name="USB_gripping")
+                    if not safe_simulate_tol(target_site_name="USB_gripping"):
+                        simulation_continue = False
+                        break
                     print("Position USB gripping reached.")
                     
                     # close gripper
                     gripper_state(state="closed", position=0.0048)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position USB gripping reached and gripper closed.")
                     
                     
                     ### USB Above gripped
                     data.ctrl[:6] = pos_USB_above_gripped
                     gripper_state(state="closed", position=0.0048)
-                    simulate_movement_tol(target_site_name="USB_above_gripped")
+                    if not safe_simulate_tol(target_site_name="USB_above_gripped"):
+                        simulation_continue = False
+                        break
                     print("Position USB above gripped reached.")
                     
                     
@@ -711,14 +796,18 @@ def run_simulation_with_parameters(params):
                     ### Angled
                     data.ctrl[:6] = pos_USB_angled
                     gripper_state(state="closed", position=0.0048)
-                    simulate_movement_tol(target_site_name="USB_searchAngled", tol=1e-4)
+                    if not safe_simulate_tol(target_site_name="USB_searchAngled", tol=1e-4):
+                        simulation_continue = False
+                        break
                     print("Position USB angled reached.")
                     
                     
                     ### Touch Z
                     data.ctrl[:6] = pos_USB_touchZ
                     gripper_state(state="closed", position=0.0048)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("Position USB touchZ reached.")
 
 
@@ -726,21 +815,27 @@ def run_simulation_with_parameters(params):
                     ### Touch Back
                     data.ctrl[:6] = pos_USB_touchback
                     gripper_state(state="closed", position=0.0048)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position USB touch back reached.")
                     
 
                     ### Touch Front
                     data.ctrl[:6] = pos_USB_touchfront
                     gripper_state(state="closed", position=0.0048)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position USB touch front reached.")
 
 
                     ### Touch Side
                     data.ctrl[:6] = pos_USB_touchside
                     gripper_state(state="closed", position=0.0048)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("Position USB touch side reached.")
 
                     gripper_axis_right_id = mujoco.mj_name2id(model, 
@@ -754,13 +849,12 @@ def run_simulation_with_parameters(params):
                                                             mujoco.mjtObj.mjOBJ_JOINT, 
                                                             'gripper_axis_left_joint')
                     dof_left_id = model.jnt_dofadr[gripper_axis_left_id]
-                    model.dof_armature[dof_left_id] = 1e7     
-
-
-                    ### Assembly
+                    model.dof_armature[dof_left_id] = 1e7                    ### Assembly
                     data.ctrl[:6] = pos_USB_assembly
                     gripper_state(state="closed", position=0.0048)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("USB assembled.")
 
                     model.dof_armature[dof_right_id] = 0    
@@ -769,7 +863,9 @@ def run_simulation_with_parameters(params):
                     ### Assembled
                     data.ctrl[:6] = pos_USB_assembled
                     gripper_state()
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("USB assembly complete.")
                     # time.sleep(2)
                     
@@ -891,11 +987,12 @@ def run_simulation_with_parameters(params):
                     data.qpos[[28, 29, 30, 31, 32, 33, 34, 41]] = pos_home
                     print("Home position reached.")
 
-                    
-                    # KET8 Above
+                      # KET8 Above
                     data.ctrl[:6] = pos_KET8_above
                     gripper_state()
-                    simulate_movement_tol(target_site_name="KET8_above")
+                    if not safe_simulate_tol(target_site_name="KET8_above"):
+                        simulation_continue = False
+                        break
                     print("Position KET8 Above reached.")
 
 
@@ -903,19 +1000,25 @@ def run_simulation_with_parameters(params):
                     # KET8 gripping 
                     data.ctrl[:6] = pos_KET8_gripping
                     gripper_state()
-                    simulate_movement_tol(target_site_name="KET8_gripping")
+                    if not safe_simulate_tol(target_site_name="KET8_gripping"):
+                        simulation_continue = False
+                        break
                     print("Position KET8 gripping reached.")
                     
                     # close gripper
                     gripper_state(state="closed", position=0.0023)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position KET8 gripping reached and gripper closed.")
                     
                     
                     # KET8 Above gripped
                     data.ctrl[:6] = pos_KET8_above_gripped
                     gripper_state(state="closed", position=0.0023)
-                    simulate_movement_tol(target_site_name="KET8_above")
+                    if not safe_simulate_tol(target_site_name="KET8_above"):
+                        simulation_continue = False
+                        break
                     print("Position KET8 above gripped reached.")
                     
                     
@@ -924,14 +1027,18 @@ def run_simulation_with_parameters(params):
                     # Angled
                     data.ctrl[:6] = pos_KET8_angled
                     gripper_state(state="closed", position=0.0023)
-                    simulate_movement_tol(target_site_name="KET8_searchAngled", tol=1e-4)
+                    if not safe_simulate_tol(target_site_name="KET8_searchAngled", tol=1e-4):
+                        simulation_continue = False
+                        break
                     print("Position KET8 angled reached.")
                     
                     
                     # Touch Z
                     data.ctrl[:6] = pos_KET8_touchZ
                     gripper_state(state="closed", position=0.0023)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("Position KET8 touchZ reached.")
 
 
@@ -939,21 +1046,27 @@ def run_simulation_with_parameters(params):
                     # Touch Back
                     data.ctrl[:6] = pos_KET8_touchback
                     gripper_state(state="closed", position=0.0023)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position KET8 touch back reached.")
                     
 
                     # Touch Front
                     data.ctrl[:6] = pos_KET8_touchfront
                     gripper_state(state="closed", position=0.0023)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position KET8 touch front reached.")
 
 
                     # Touch Side
                     data.ctrl[:6] = pos_KET8_touchside
                     gripper_state(state="closed", position=0.0023)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("Position KET8 touch side reached.")
 
                     gripper_axis_right_id = mujoco.mj_name2id(model, 
@@ -967,12 +1080,12 @@ def run_simulation_with_parameters(params):
                                                             mujoco.mjtObj.mjOBJ_JOINT, 
                                                             'gripper_axis_left_joint')
                     dof_left_id = model.jnt_dofadr[gripper_axis_left_id]
-                    model.dof_armature[dof_left_id] = 1e7     
-
-                    # Assembly
+                    model.dof_armature[dof_left_id] = 1e7                    # Assembly
                     data.ctrl[:6] = pos_KET8_assembly
                     gripper_state(state="closed", position=0.0023)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("KET8 assembled.")
                     
                     model.dof_armature[dof_right_id] = 0    
@@ -982,7 +1095,9 @@ def run_simulation_with_parameters(params):
                     ### Assembled
                     data.ctrl[:6] = pos_KET8_assembled
                     gripper_state()
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("KET8 assembly complete.")
 
 
@@ -1106,11 +1221,12 @@ def run_simulation_with_parameters(params):
                     data.qpos[[28, 29, 30, 31, 32, 33, 34, 41]] = pos_home
                     print("Home position reached.")
 
-                    
-                    # KET12 Above
+                      # KET12 Above
                     data.ctrl[:6] = pos_KET12_above
                     gripper_state()
-                    simulate_movement_tol(target_site_name="KET12_above")
+                    if not safe_simulate_tol(target_site_name="KET12_above"):
+                        simulation_continue = False
+                        break
                     print("Position KET12 Above reached.")
 
 
@@ -1118,19 +1234,25 @@ def run_simulation_with_parameters(params):
                     # KET12 gripping 
                     data.ctrl[:6] = pos_KET12_gripping
                     gripper_state()
-                    simulate_movement_tol(target_site_name="KET12_gripping",  tol=1e-4)
+                    if not safe_simulate_tol(target_site_name="KET12_gripping", tol=1e-4):
+                        simulation_continue = False
+                        break
                     print("Position KET12 gripping reached.")
                     
                     # close gripper
                     gripper_state(state="closed", position=0.0047)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position KET12 gripping reached and gripper closed.")
                     
                     
                     # KET12 Above gripped
                     data.ctrl[:6] = pos_KET12_above_gripped
                     gripper_state(state="closed", position=0.0047)
-                    simulate_movement_tol(target_site_name="KET12_above")
+                    if not safe_simulate_tol(target_site_name="KET12_above"):
+                        simulation_continue = False
+                        break
                     print("Position KET12 above gripped reached.")
                     
                     
@@ -1139,14 +1261,18 @@ def run_simulation_with_parameters(params):
                     # Angled
                     data.ctrl[:6] = pos_KET12_angled
                     gripper_state(state="closed", position=0.0047)
-                    simulate_movement_tol(target_site_name="KET12_searchAngled", tol=1e-4)
+                    if not safe_simulate_tol(target_site_name="KET12_searchAngled", tol=1e-4):
+                        simulation_continue = False
+                        break
                     print("Position KET12 angled reached.")
                     
                     
                     # Touch Z
                     data.ctrl[:6] = pos_KET12_touchZ
                     gripper_state(state="closed", position=0.0047)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("Position KET12 touchZ reached.")
 
 
@@ -1154,21 +1280,27 @@ def run_simulation_with_parameters(params):
                     # Touch Back
                     data.ctrl[:6] = pos_KET12_touchback
                     gripper_state(state="closed", position=0.0047)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position KET12 touch back reached.")
                     
 
                     # Touch Front
                     data.ctrl[:6] = pos_KET12_touchfront
                     gripper_state(state="closed", position=0.0047)
-                    simulate_movement_duration(5)
+                    if not safe_simulate_duration(5):
+                        simulation_continue = False
+                        break
                     print("Position KET12 touch front reached.")
 
 
                     # Touch Side
                     data.ctrl[:6] = pos_KET12_touchside
                     gripper_state(state="closed", position=0.0047)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("Position KET12 touch side reached.")
 
                     gripper_axis_right_id = mujoco.mj_name2id(model, 
@@ -1181,13 +1313,12 @@ def run_simulation_with_parameters(params):
                                                             mujoco.mjtObj.mjOBJ_JOINT, 
                                                             'gripper_axis_left_joint')
                     dof_left_id = model.jnt_dofadr[gripper_axis_left_id]
-                    model.dof_armature[dof_left_id] = 1e7     
-
-
-                    # Assembly
+                    model.dof_armature[dof_left_id] = 1e7                    # Assembly
                     data.ctrl[:6] = pos_KET12_assembly
                     gripper_state(state="closed", position=0.0047)
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("KET12 assembled.")
 
                     model.dof_armature[dof_right_id] = 0    
@@ -1197,17 +1328,26 @@ def run_simulation_with_parameters(params):
                     ### Assembled
                     data.ctrl[:6] = pos_KET12_assembled
                     gripper_state()
-                    simulate_movement_duration(10)
+                    if not safe_simulate_duration(10):
+                        simulation_continue = False
+                        break
                     print("KET12 assembly complete.")
 
-                    # time.sleep(2)        
-        
-        # 每次模拟结束后关闭查看器
+                    # time.sleep(2)
+          # 每次模拟结束后关闭查看器
         viewer.close()
         print(f"=== 第 {run_num}/{repeat_count} 次模拟完成 ===")
+        
+        # 如果查看器被用户关闭或模拟被中断，退出所有重复
+        if not simulation_continue:
+            print(f"=== 模拟被用户取消，已完成 {run_num} 次模拟 ===")
+            break
     
     # 所有模拟完成后的总结
-    print(f"\n=== 所有 {repeat_count} 次模拟已完成 ===")
+    if simulation_continue:
+        print(f"\n=== 所有 {repeat_count} 次模拟已完成 ===")
+    else:
+        print(f"\n=== 模拟被用户取消 ===") 
 
 def main():
     # 创建并显示参数窗口
