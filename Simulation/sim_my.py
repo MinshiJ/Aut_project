@@ -40,12 +40,12 @@ class ParameterWindow:
         self.assembly_task = tk.StringVar(value="RJ45")
         self.compliance_stiffness = tk.StringVar(value="50.0")
         self.assembly_stiffness = tk.StringVar(value="2.0")
-        self.z_stiffness = tk.StringVar(value="100")
+        self.z_stiffness = tk.StringVar(value="100.0")
         self.rotx_stiffness = tk.StringVar(value="100.0")
         self.roty_stiffness = tk.StringVar(value="100.0")
         self.rotz_stiffness = tk.StringVar(value="1.0")
         self.starting_pos_shift = tk.StringVar(value="0.0")
-        self.simulation_repeats = tk.StringVar(value="1")
+        self.simulation_repeats = tk.StringVar(value="5")
         
         # 设置字体
         self.default_font = ('Microsoft YaHei UI', 10)
