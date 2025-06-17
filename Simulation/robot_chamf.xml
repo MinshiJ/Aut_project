@@ -1,0 +1,879 @@
+<mujoco model="Simulation for RJ45">
+
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
+  <option timestep="5e-5" integrator="implicitfast" solver="Newton" 
+      gravity="0 0 -9.81" noslip_iterations="0" impratio="1" cone="elliptic" 
+      iterations="100"/>
+  <option>
+      <flag multiccd="enable" contact="enable"/>
+  </option>
+    
+                      
+  <visual>
+      <scale jointlength="0.3" jointwidth="0.03" framelength="0.8" 
+          framewidth="0.03" contactwidth="0.03" contactheight="0.01" 
+          forcewidth="0.01"/>
+  </visual>
+  
+  
+  <default>
+    <site size="0.001" rgba="0.5 0.5 0.5 0.3" group="4"/>
+    <default class="ur5e">
+      <material specular="0.5" shininess="0.25"/>
+      <joint axis="0 1 0" range="-6.28319 6.28319" armature="0.1" damping="1"/>
+      <general gaintype="fixed" biastype="affine" ctrlrange="-6.2831 6.2831" 
+          gainprm="2000" biasprm="0 -2000 -400" forcerange="-150 150"/>
+            
+      <default class="size3">
+        <default class="size3_limited">
+          <joint range="-3.1415 3.1415"/>
+          <general ctrlrange="-3.1415 3.1415"/>
+        </default>
+      </default>
+      
+      <default class="size1">
+        <general gainprm="500" biasprm="0 -500 -100" forcerange="-28 28"/>
+      </default>
+      
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      
+      <default class="collision">
+        <geom type="capsule" group="3"/>
+        <default class="eef_collision">
+          <geom type="cylinder"/>
+        </default>
+      </default>
+      
+      
+    </default>
+  </default>
+
+  <asset>
+    <!-- Colors for Robot -->
+    <material class="ur5e" name="black" rgba="0.033 0.033 0.033 1"/>
+    <material class="ur5e" name="jointgray" rgba="0.278 0.278 0.278 1"/>
+    <material class="ur5e" name="linkgray" rgba="0.82 0.82 0.82 1"/>
+    <material class="ur5e" name="urblue" rgba="0.49 0.678 0.8 1"/>
+
+    <!-- Mesh files of robot -->
+    <mesh file="base_0.obj"/>
+    <mesh file="base_1.obj"/>
+    <mesh file="shoulder_0.obj"/>
+    <mesh file="shoulder_1.obj"/>
+    <mesh file="shoulder_2.obj"/>
+    <mesh file="upperarm_0.obj"/>
+    <mesh file="upperarm_1.obj"/>
+    <mesh file="upperarm_2.obj"/>
+    <mesh file="upperarm_3.obj"/>
+    <mesh file="forearm_0.obj"/>
+    <mesh file="forearm_1.obj"/>
+    <mesh file="forearm_2.obj"/>
+    <mesh file="forearm_3.obj"/>
+    <mesh file="wrist1_0.obj"/>
+    <mesh file="wrist1_1.obj"/>
+    <mesh file="wrist1_2.obj"/>
+    <mesh file="wrist2_0.obj"/>
+    <mesh file="wrist2_1.obj"/>
+    <mesh file="wrist2_2.obj"/>
+    <mesh file="wrist3.obj"/>
+
+    <!-- Mesh files of gripper mount -->
+    <mesh file="gripper_mount_left.obj"/>
+    <mesh file="gripper_mount_right.obj"/>    
+    
+    <!-- Mesh files of grippers -->     
+    <!-- chamfered gripper -->
+    <mesh file="finray_gripper_chamf_visual.obj"/>
+    <mesh file="finray_gripper_chamf_collision_0.obj"/>
+    <mesh file="finray_gripper_chamf_collision_1.obj"/>
+    
+
+    <!-- Mesh files of NIST-Board -->
+    <mesh file="NIST_Board_Lifted.obj"/>
+    <mesh file="NIST_Board_Lifted_decompose_collision_0.obj"/>
+    <mesh file="NIST_Board_Lifted_decompose_collision_1.obj"/>  
+    <mesh file="NIST_Board_Lifted_decompose_collision_2.obj"/>
+    <mesh file="NIST_Board_Lifted_decompose_collision_3.obj"/>   
+    <mesh file="NIST_Board_Lifted_decompose_collision_4.obj"/>   
+    <mesh file="NIST_Board_Lifted_decompose_collision_5.obj"/>   
+    <mesh file="NIST_Board_Lifted_decompose_collision_6.obj"/>   
+    <mesh file="NIST_Board_Lifted_decompose_collision_7.obj"/>   
+    
+    
+    <!-- USB Male -->
+    <mesh file="USB_Male.obj"/>
+    
+    <mesh file="USB_Male_Blender_collision_0.obj"/>
+    <mesh file="USB_Male_Blender_collision_1.obj"/>
+    <mesh file="USB_Male_Blender_collision_2.obj"/>
+    <mesh file="USB_Male_Blender_collision_3.obj"/>
+    <mesh file="USB_Male_Blender_collision_4.obj"/>
+    <mesh file="USB_Male_Blender_collision_5.obj"/>
+
+    
+    <!-- USB Female -->
+    <mesh file="USB_Female.obj"/>
+    <mesh file="USB_Female_collision_0.obj"/>
+    <mesh file="USB_Female_collision_1.obj"/>
+    <mesh file="USB_Female_collision_2.obj"/>
+    <mesh file="USB_Female_collision_3.obj"/>
+    <mesh file="USB_Female_collision_4.obj"/>
+    <mesh file="USB_Female_collision_5.obj"/>
+    <mesh file="USB_Female_collision_6.obj"/>
+    <mesh file="USB_Female_collision_7.obj"/>
+    <mesh file="USB_Female_collision_8.obj"/>
+    <mesh file="USB_Female_collision_9.obj"/>
+    <mesh file="USB_Female_collision_10.obj"/>
+    <mesh file="USB_Female_collision_11.obj"/>
+    <mesh file="USB_Female_collision_12.obj"/>
+    <mesh file="USB_Female_collision_13.obj"/>
+    <mesh file="USB_Female_collision_14.obj"/>
+    <mesh file="USB_Female_collision_15.obj"/>
+
+    
+    <!-- RJ45 Male -->
+    <mesh file="RJ45_Male.obj"/>
+    <mesh file="RJ45_Male_collision_0.obj"/>
+    <mesh file="RJ45_Male_collision_1.obj"/>
+    <mesh file="RJ45_Male_collision_2.obj"/>
+    <mesh file="RJ45_Male_collision_3.obj"/>
+    <mesh file="RJ45_Male_collision_4.obj"/>
+    <mesh file="RJ45_Male_collision_5.obj"/>
+    <mesh file="RJ45_Male_collision_6.obj"/>
+    <mesh file="RJ45_Male_collision_7.obj"/>
+    <mesh file="RJ45_Male_collision_8.obj"/>
+
+
+    <!-- RJ45 Housing and Female -->
+    <mesh file="RJ45_Housing_Female.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_0.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_1.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_2.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_3.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_4.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_5.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_6.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_7.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_8.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_9.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_10.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_11.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_12.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_13.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_14.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_15.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_16.obj"/>
+    <mesh file="RJ45_Housing_Female_collision_17.obj"/>    
+    <mesh file="RJ45_Housing_Female_collision_18.obj"/>
+  </asset>
+  
+  
+ 
+  <worldbody>
+    <light name="spotlight" mode="targetbodycom" target="wrist_2_link" 
+        pos="0 -1 2"/>
+    
+    <!-- Position sites -->
+    <body name="test_sites">
+        <site name="above_NIST" pos="-0.5 0.4 0.15"/>
+        <site name="above_tray" pos="-0.5 -0.4 0.15"/>
+        <site name="above_tray_grip" pos="-0.5 -0.4 0.03"/>
+ 
+                       
+        <site name="RJ45_above" pos="-0.6413 0.54745 0.15"/>
+        <site name="RJ45_gripping" pos="-0.6413 0.54745 0.084"/>
+        <site name="RJ45_above_gripped" pos="-0.6413 0.54745 0.12"/>
+        <site name="RJ45_searchAngled" pos="-0.648 0.547 0.10"/>
+    </body>
+        
+    <!-- NIST Board -->
+    <body name="NIST Board" pos="-0.30 0.2 0" xyaxes="1 0 0 0 0 1">
+        <geom mesh="NIST_Board_Lifted" rgba=".5 .5 .5 1" class="visual"/>
+        <geom mesh="NIST_Board_Lifted_decompose_collision_0" type="mesh" 
+            group="3"/>
+        <geom mesh="NIST_Board_Lifted_decompose_collision_1" type="mesh" 
+            group="3"/>
+        <geom mesh="NIST_Board_Lifted_decompose_collision_2" type="mesh" 
+            group="3"/>
+        <geom mesh="NIST_Board_Lifted_decompose_collision_3" type="mesh" 
+            group="3"/>
+        <geom mesh="NIST_Board_Lifted_decompose_collision_4" type="mesh" 
+            group="3"/>
+        <geom mesh="NIST_Board_Lifted_decompose_collision_5" type="mesh" 
+            group="3"/>
+        <geom mesh="NIST_Board_Lifted_decompose_collision_6" type="mesh" 
+            group="3"/>
+        <geom mesh="NIST_Board_Lifted_decompose_collision_7" type="mesh" 
+            group="3"/>    
+    </body>
+    
+    
+    <!-- USB Female --> 
+    <body name="USB_Female" pos="-0.3414 0.4722 0.029" xyaxes="0 1 0 0 0 1">
+        <geom mesh="USB_Female" class="visual"/>
+        <geom mesh="USB_Female_collision_0" rgba="0.73 0.27 1 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_1" rgba="0.59 0.50 0.11 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5"
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_2" rgba="0.05 0.5 0.29 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>        
+        <geom mesh="USB_Female_collision_3" rgba="0.14 0.37 0.57 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>        
+        <geom mesh="USB_Female_collision_4" rgba="0.78 0.95 0.14 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_5" rgba="0.30 0.99 0.07 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_6" rgba="0.20 0.1 0.38 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_7" rgba="0.54 0.42 0.15 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_8" rgba="0.06 0.73 0.88 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_9" rgba="0.27 0.83 0.21 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_10" rgba="0.93 0.56 0.56 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_11" rgba="0.17 0.95 0.14 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_12" rgba="0.15 0.62 0.99 1" type="mesh"
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_13" rgba="0.12 0.67 0.21 1" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_14" rgba="0.57 0.29 0.28 1" type="mesh"
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Female_collision_15" rgba="0.00 0.35 0.82 1" type="mesh"
+            friction="0.2 0.05 0.0001" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+    </body>
+
+   
+    <!-- USB Male -->
+    <body name="USB_Male" pos="-0.3414 0.4722 0.057" xyaxes="0 1 0 0 0 1">
+        <joint type="free"/>
+        <geom mesh="USB_Male" class="visual"/>
+        <geom mesh="USB_Male_Blender_collision_0" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.001 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Male_Blender_collision_1" type="mesh"
+            friction="0.2 0.05 0.0001" condim="3" solref="0.001 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Male_Blender_collision_2" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.001 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Male_Blender_collision_3" type="mesh" 
+            friction="0.2 0.05 0.0001" condim="3" solref="0.001 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="USB_Male_Blender_collision_4" type="mesh"
+            friction="0.2 0.05 0.0001" condim="3" solref="0.001 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>        
+        <geom mesh="USB_Male_Blender_collision_5" type="mesh"
+            friction="0.2 0.05 0.0001" condim="3" solref="0.001 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+    </body>
+
+
+    
+    <!-- RJ45 Housing and Female -->
+    <body name="RJ45_Housing_Female" pos="-0.6413 0.547 0.029" 
+        xyaxes="1 0 0 0 0 1">
+        <geom mesh="RJ45_Housing_Female" class="visual"/>
+        <geom mesh="RJ45_Housing_Female_collision_0" rgba="0.59 0.94 0.25 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Housing_Female_collision_1" rgba="0.93 0.94 0.13 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Housing_Female_collision_2" rgba="0.31 0.15 0.05 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Housing_Female_collision_3" rgba="0.30 0.23 0.89 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Housing_Female_collision_4" rgba="0.08 0.39 0.23 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Housing_Female_collision_5" rgba="0.38 0.50 0.43 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Housing_Female_collision_6" rgba="0.38 0.31 0.94 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_7" mesh="RJ45_Housing_Female_collision_7" 
+            rgba="0.86 0.77 0.92 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_8" mesh="RJ45_Housing_Female_collision_8" 
+            rgba="0.47 0.63 0.20 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_9" mesh="RJ45_Housing_Female_collision_9" 
+            rgba="0.32 0.72 0.94 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>       
+        <geom name="RJ45_Female_10" mesh="RJ45_Housing_Female_collision_10" 
+            rgba="0.10 0.30 0.71 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_11" mesh="RJ45_Housing_Female_collision_11" 
+            rgba="0.57 0.85 0.31 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_12" mesh="RJ45_Housing_Female_collision_12" 
+            rgba="0.89 0.57 0.22 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_13" mesh="RJ45_Housing_Female_collision_13" 
+            rgba="0.13 0.32 0.94 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Housing_Female_collision_14" rgba="0.43 0.57 0.60 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Housing_Female_collision_15" rgba="0.86 0.91 0.32 1" 
+            type="mesh" friction="0.2 0.05 0.01" condim="3" solref="0.01 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_16" mesh="RJ45_Housing_Female_collision_16" 
+            rgba="0.83 0.35 0.40 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_17" mesh="RJ45_Housing_Female_collision_17" 
+            rgba="0.72 0.42 0.20 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Female_18" mesh="RJ45_Housing_Female_collision_18" 
+            rgba="0.83 0.35 0.40 1" type="mesh" friction="0.2 0.05 0.01" 
+            condim="3" solref="0.01 0.5" solimp="0.99 0.99 0.001" group="3"/>
+              
+        <site name="RJ45_touch_Top" pos="0.0002 0.028 0.005" type="box" 
+            size="0.0001 0.002 0.0059" euler="0 -1.5708 -1.5708" rgba="0 0 0 1" 
+            group="3"/>
+        <site name="RJ45_touch_Back" pos="0.000 0.026 -0.005" type="box"
+            size="0.00105 0.002 0.00585" euler="0 -1.5708 0" rgba="1 0 0 1" 
+            group="3"/>
+        <site name="RJ45_touch_Front" pos="0.0002 0.026 0.003" type="box" 
+            size="0.0001 0.002 0.0059" euler="0 -1.5708 0" rgba="0 1 0 1" 
+            group="3"/>
+        <site name="RJ45_touch_Side" pos="0.0061 0.026 -0.0005" type="box" 
+            size="0.0001 0.002 0.0035" euler="0 0 0" rgba="0 0 1 1" 
+            group="3"/>
+
+    </body>
+
+    <!-- RJ45 Male decompose -->
+    <body name="RJ45_Male" pos="-0.6413 0.54745 0.0451" xyaxes="1 0 0 0 0 1">
+        <joint type="free"/>
+        <geom mesh="RJ45_Male" class="visual"/>
+        <geom name="RJ45_Male_0" mesh="RJ45_Male_collision_0" 
+            rgba="0.97 0.47 0.81 1" type="mesh" friction="0.2 0.05 0.0001" 
+            condim="3" solref="0.001 0.5" solimp="0.99 0.99 0.010" group="3"/>
+        <geom name="RJ45_Male_1" mesh="RJ45_Male_collision_1" 
+            rgba="0.22 0.71 0.68 1" type="mesh" friction="0.2 0.05 0.0001" 
+            condim="3" solref="0.001 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Male_2" mesh="RJ45_Male_collision_2" 
+            rgba="0.39 0.67 0.99 1" type="mesh" friction="0.2 0.05 0.0001" 
+            condim="3" solref="0.001 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Male_3" mesh="RJ45_Male_collision_3" 
+            rgba="0.65 0.91 0.24 1" type="mesh" friction="0.2 0.05 0.0001" 
+            condim="3" solref="0.001 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Male_4" mesh="RJ45_Male_collision_4" 
+            rgba="0.25 0.41 0.00 1" type="mesh" friction="0.2 0.05 0.0001" 
+            condim="3" solref="0.001 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Male_5" mesh="RJ45_Male_collision_5" 
+            rgba="0.59 0.36 0.04 1" type="mesh" friction="0.2 0.05 0.0001" 
+            condim="3" solref="0.001 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Male_collision_6" rgba="0.27 0.63 0.1 1" type="mesh"
+            friction="0.2 0.05 0.0001" condim="3" solref="0.001 0.5" 
+            solimp="0.99 0.99 0.001" group="3"/>
+        <geom name="RJ45_Male_grip" mesh="RJ45_Male_collision_7" 
+            rgba="0.10 0.57 0.91 1" type="mesh" friction="0.2 0.05 0.0001" 
+            condim="3" solref="0.001 0.5" solimp="0.99 0.99 0.001" group="3"/>
+        <geom mesh="RJ45_Male_collision_8" rgba="0.73 0.16 0.60 1" type="mesh"
+             friction="0.2 0.05 0.0001" condim="3" solref="0.001 0.5" 
+             solimp="0.99 0.99 0.001" group="3"/>
+    </body>
+    
+       
+    <!-- Tray -->
+    <body name="Tray" pos="-0.50 -0.4 0.005">
+        <geom name="tray" type="box" size="0.2 0.2 0.005" rgba="0.8 0.8 0.8 1" 
+            friction="1 0.05 0.01" group="3"/>
+        <geom type="box" size="0.2 0.2 0.005" rgba="0.8 0.8 0.8 1" 
+            class="visual"/>
+    </body> 
+    
+    
+    <!-- KET8 -->
+    <body name="KET8" pos="-0.56645 0.4722 0.055">
+        <geom name="KET8" type="box" size="0.004 0.0035 0.025" group="3" 
+            friction="0.2 0.05 0.0001" solref="0.001 1" 
+            solimp="0.99 0.99 0.001"/>
+        <geom type="box" size="0.004 0.0035 0.025" class="visual"/>
+        <joint type="free" damping="0.007"/>
+    </body>
+  
+  
+    <!-- KET12 -->
+    <body name="KET12" pos="-0.3414 0.3971 0.055">
+        <geom name="KET12" type="box" size="0.004 0.006 0.025" group="3" 
+            friction="0.2 0.05 0.0001" solref="0.001 1" 
+            solimp="0.99 0.99 0.001"/>
+        <geom type="box" size="0.004 0.006 0.025" class="visual"/>
+        <joint type="free" damping="0.007"/>
+    </body>
+  
+    
+    <!-- Ur5e Robot -->
+    <body name="base" quat="1 0 0 1" childclass="ur5e" gravcomp="1">
+      <inertial mass="4.0" pos="0 0 0" 
+          diaginertia="0.00443333156 0.00443333156 0.0072"/>
+      <geom mesh="base_0" material="black" class="visual"/>
+      <geom mesh="base_1" material="jointgray" class="visual"/>
+      
+      <body name="shoulder_link" pos="0 0 0.163" gravcomp="1">
+        <inertial mass="3.7" pos="0 0 0" 
+            diaginertia="0.0102675 0.0102675 0.00666"/>
+        <joint name="shoulder_pan_joint" class="size3" axis="0 0 1"/>
+        <geom mesh="shoulder_0" material="urblue" class="visual"/>
+        <geom mesh="shoulder_1" material="black" class="visual"/>
+        <geom mesh="shoulder_2" material="jointgray" class="visual"/>
+        <geom class="collision" size="0.06 0.06" pos="0 0 -0.04"/>
+        
+        <body name="upper_arm_link" pos="0 0.138 0" quat="1 0 1 0" 
+            gravcomp="1">
+          <inertial mass="8.393" pos="0 0 0.2125" 
+              diaginertia="0.133886 0.133886 0.0151074"/>
+          <joint name="shoulder_lift_joint" class="size3"/>
+          <geom mesh="upperarm_0" material="linkgray" class="visual"/>
+          <geom mesh="upperarm_1" material="black" class="visual"/>
+          <geom mesh="upperarm_2" material="jointgray" class="visual"/>
+          <geom mesh="upperarm_3" material="urblue" class="visual"/>
+          <geom class="collision" pos="0 -0.04 0" quat="1 1 0 0" 
+              size="0.06 0.06"/>
+          <geom class="collision" size="0.05 0.2" pos="0 0 0.2"/>
+          
+          <body name="forearm_link" pos="0 -0.131 0.425" gravcomp="1">
+            <inertial mass="2.275" pos="0 0 0.196" 
+                diaginertia="0.0311796 0.0311796 0.004095"/>
+            <joint name="elbow_joint" class="size3_limited"/>
+            <geom mesh="forearm_0" material="urblue" class="visual"/>
+            <geom mesh="forearm_1" material="linkgray" class="visual"/>
+            <geom mesh="forearm_2" material="black" class="visual"/>
+            <geom mesh="forearm_3" material="jointgray" class="visual"/>
+            <geom class="collision" pos="0 0.08 0" quat="1 1 0 0" 
+                size="0.055 0.06"/>
+            <geom class="collision" size="0.038 0.19" pos="0 0 0.2"/>
+            
+            <body name="wrist_1_link" pos="0 0 0.392" quat="1 0 1 0" 
+                gravcomp="1">
+              <inertial mass="1.219" pos="0 0.127 0" 
+                  diaginertia="0.0025599 0.0025599 0.0021942"/>
+              <joint name="wrist_1_joint" class="size1"/>
+              <geom mesh="wrist1_0" material="black" class="visual"/>
+              <geom mesh="wrist1_1" material="urblue" class="visual"/>
+              <geom mesh="wrist1_2" material="jointgray" class="visual"/>
+              <geom class="collision" pos="0 0.05 0" quat="1 1 0 0" 
+                  size="0.04 0.07"/>
+              
+              <body name="wrist_2_link" pos="0 0.127 0" gravcomp="1">
+                <inertial mass="1.219" pos="0 0 0.1" 
+                    diaginertia="0.0025599 0.0025599 0.0021942"/>
+                <joint name="wrist_2_joint" axis="0 0 1" class="size1"/>
+                <geom mesh="wrist2_0" material="black" class="visual"/>
+                <geom mesh="wrist2_1" material="urblue" class="visual"/>
+                <geom mesh="wrist2_2" material="jointgray" class="visual"/>
+                <geom class="collision" size="0.04 0.06" pos="0 0 0.04"/>
+                <geom class="collision" pos="0 0.02 0.1" quat="1 1 0 0" 
+                    size="0.04 0.04"/>
+                
+                <body name="wrist_3_link" pos="0 0 0.1" gravcomp="1">
+                  <inertial mass="0.1889" pos="0 0.0771683 0" quat="1 0 0 1"
+                    diaginertia="0.000132134 9.90863e-05 9.90863e-05"/>
+                  <joint name="wrist_3_joint" class="size1"/>
+                  <geom material="linkgray" mesh="wrist3" class="visual"/>
+                  <geom class="eef_collision" pos="0 0.08 0" quat="1 1 0 0" 
+                      size="0.04 0.02"/>
+                  <site name="attachment_site" pos="0 0.1 0" quat="-1 1 0 0" 
+                      size="0.02" group="1"/>
+                    <body name="TCP" pos="0 0.198 0" xyaxes="0 0 -1 1 0 0">
+                        <site name="end_effector" size="0.001" group="2"/>
+                    </body>
+                    
+                    <!-- Gripper mounts -->
+                    <body name="gripper_mount_mount" pos="0 .115 0" 
+                        gravcomp="1">
+                        <camera name="gripper_cam" pos="0 -0.02 -0.07" 
+                            xyaxes="-1 0 0 0 1 -1" mode="fixed"/>
+                        <geom type="box" size=".03 .015 .03" rgba="0 0 0 1" 
+                            group="3"/>
+                        <geom type="box" size=".03 .015 .03" rgba="0 0 0 1" 
+                            class="visual"/>
+                        
+                        <!-- Gripper left -->
+                        <body name="gripper_mount_axis_left" pos="-0.015 0.02 0" 
+                            gravcomp="1">
+                            <geom type="box" size=".015 .005 .0235" 
+                                rgba="0.25 0.25 0.25 1" group="3"/>
+                            <geom type="box" size=".015 .005 .0235" 
+                                rgba="0.25 0.25 0.25 1" class="visual"/>
+                            <joint name="gripper_axis_left_joint" type="slide" 
+                                axis="1 0 0" range="-0.015 -0.002" damping="1"/>
+                            
+                            <body name="gripper_mount_left" 
+                                pos="-0.007 0.005 0.0235" gravcomp="1">
+                                <geom mesh="gripper_mount_left" type="mesh" 
+                                    group="3"/>
+                                <geom mesh="gripper_mount_left" class="visual"/>
+                                
+                                <body name="finray_gripper_left" 
+                                    pos="0.0248 0.0623 -0.0295"  gravcomp="1">
+                                    <inertial mass="0.002" 
+                                        pos="0.0266 -0.0093 0.006" 
+                                        diaginertia="0.0028 0.0218 0.0213"/>
+                                    <geom name="gripper_left_side" 
+                                        mesh="finray_gripper_chamf_collision_0" 
+                                        type="mesh"  euler="1.571 -1.745 0"                   
+                                        friction="1 1 0.01" condim="3" 
+                                        solref="0.01 0.5" group="3"
+                                        solimp="0.99 0.99 0.001"/>
+                                    <geom name="gripper_left_up" 
+                                        mesh="finray_gripper_chamf_collision_1" 
+                                        type="mesh"  euler="1.571 -1.745 0" 
+                                        friction="1 1 0.01" condim="3" 
+                                        solref="0.01 0.5" group="3" 
+                                        solimp="0.99 0.99 0.001"/>
+                                    <geom mesh="finray_gripper_chamf_visual" 
+                                        euler="1.571 -1.745 0" class="visual"/>
+                                    <joint name="compliance_dir_left" 
+                                        type="slide" pos="-0.003 -0.003 0.006" 
+                                        axis="1 0 0" stiffness="2000" 
+                                        damping="10"/>                                                                                
+                                    <joint name="assembly_dir_left" type="slide" 
+                                        pos="-0.003 -0.003 0.006" axis="0 1 0" 
+                                        stiffness="40000" damping="10"/>                                                
+                                    <joint name="z_dir_left" type="slide" 
+                                        pos="-0.003 -0.003 0.006" axis="0 0 1" 
+                                        stiffness="100000" damping="10"/>
+                                    <joint name="rot_x_left" type="hinge" 
+                                        pos="-0.003 0.021 0.006" axis="1 0 0" 
+                                        stiffness="10" damping="1"/>
+                                    <joint name="rot_y_left" type="hinge" 
+                                        pos="-0.003 0.021 0.006" axis="0 1 0" 
+                                        stiffness="10" damping="1"/>
+                                    <joint name="rot_z_left" type="hinge" 
+                                        pos="-0.003 0.021 0.006" axis="0 0 1" 
+                                        stiffness="1" damping="1"/>
+                                </body>
+                            </body>
+                        </body>
+     
+                                               
+                        <!-- Gripper right -->
+                        <body name="gripper_mount_axis_right" pos="0.015 0.02 0" 
+                            gravcomp="1">
+                            <geom type="box" size=".015 .005 .0235" 
+                                rgba="0.25 0.25 0.25 1" class="visual"/>
+                            <geom type="box" size=".015 .005 .0235" 
+                                rgba="0.25 0.25 0.25 1" group="3"/>
+                            <joint name="gripper_axis_right_joint" type="slide" 
+                                axis="1 0 0" range="0.002 0.015" damping="1"/> 
+                            
+                            <body name="gripper_mount_right" 
+                                pos="0.007 0.005 0.0235" gravcomp="1">
+                                <geom mesh="gripper_mount_right" type="mesh" 
+                                    group="3"/>
+                                <geom mesh="gripper_mount_right" class="visual"/>
+                                
+                                <body name="finray_gripper_right" 
+                                    pos="-0.0248 0.0623 -0.0175" gravcomp="1">
+                                    <inertial mass="0.002" 
+                                        pos="0.0266 -0.0093 0.006" 
+                                        diaginertia="0.0028 0.0218 0.0213"/>
+                                    <geom name="gripper_right_side" 
+                                        mesh="finray_gripper_chamf_collision_0" 
+                                        type="mesh"  euler="-1.571 1.396 0" 
+                                        friction="1 1 0.01" condim="3" 
+                                        solref="0.01 0.5" group="3"
+                                        solimp="0.99 0.99 0.001"/>
+                                    <geom name="gripper_right_up" 
+                                        mesh="finray_gripper_chamf_collision_1" 
+                                        type="mesh"  euler="-1.571 1.396 0" 
+                                        friction="1 1 0.01" condim="3" 
+                                        solref="0.01 0.5" group="3"
+                                        solimp="0.99 0.99 0.001"/>
+                                    <geom mesh="finray_gripper_chamf_visual" 
+                                        euler="-1.571 1.396 0" class="visual"/>
+                                    <joint name="compliance_dir_right" 
+                                        type="slide" pos="0.003 -0.003 -0.006" 
+                                        axis="-1 0 0" stiffness="2000" 
+                                        damping="10"/>                                                                                                                    
+                                    <joint name="assembly_dir_right" type="slide" 
+                                        pos="0.003 -0.003 -0.006" axis="0 1 0" 
+                                        stiffness="40000" damping="10"/>                                                
+                                    <joint name="z_dir_right" type="slide" 
+                                        pos="0.003 -0.003 -0.006" axis="0 0 1" 
+                                        stiffness="100000" damping="10"/>
+                                    <joint name="rot_x_right" type="hinge" 
+                                        pos="0.003 0.021 -0.006" axis="-1 0 0" 
+                                        stiffness="10" damping="1"/>
+                                    <joint name="rot_y_right" type="hinge" 
+                                        pos="0.003 0.021 -0.006" axis="0 1 0" 
+                                        stiffness="10" damping="1"/>
+                                    <joint name="rot_z_right" type="hinge" 
+                                        pos="0.003 0.021 -0.006" axis="0 0 1" 
+                                        stiffness="1" damping="1"/>                                
+                                </body>
+                            </body>                                 
+                        </body>
+                    </body>   
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  
+  
+  <actuator>
+      <general class="size3" name="shoulder_pan" joint="shoulder_pan_joint"/>
+      <general class="size3" name="shoulder_lift" joint="shoulder_lift_joint"/>
+      <general class="size3_limited" name="elbow" joint="elbow_joint"/>
+
+      <general class="size1" name="wrist_1" joint="wrist_1_joint"/>
+      <general class="size1" name="wrist_2" joint="wrist_2_joint"/>
+      <general class="size1" name="wrist_3" joint="wrist_3_joint"/>
+    
+      <position name="gripper_left_pos" joint="gripper_axis_left_joint" 
+          ctrlrange="-0.015 -0.002" kp="1000" dampratio="2" forcerange="-5 5"/>    
+      <position name="gripper_right_pos" joint="gripper_axis_right_joint" 
+          ctrlrange="0.002 0.015" kp="1000" dampratio="2" forcerange="-5 5"/> 
+  </actuator>
+  
+  <contact>
+  <!-- RJ45 -->
+      <!-- contacts for right gripper and RJ45 -->
+      <pair geom1="gripper_right_side" geom2="RJ45_Male_grip" 
+          condim="3" friction="1 1 0.01" solref="0.001 1" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="gripper_right_up" geom2="RJ45_Male_grip" 
+          condim="3" friction="1 1 0.01" solref="0.001 1" 
+          solimp="0.99 0.99 0.001"/>
+      
+      <!-- contacts for left gripper and RJ45 -->
+      <pair geom1="gripper_left_side" geom2="RJ45_Male_grip"
+          condim="3" friction="1 1 0.01" solref="0.001 1" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="gripper_left_up" geom2="RJ45_Male_grip"
+          condim="3" friction="1 1 0.01" solref="0.001 1" 
+          solimp="0.99 0.99 0.001"/>
+      
+      
+      <!-- contacts for RJ45 Male and Female -->
+      <pair geom1="RJ45_Female_7" geom2="RJ45_Male_0"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_7" geom2="RJ45_Male_1"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_7" geom2="RJ45_Male_2"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_7" geom2="RJ45_Male_3"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_7" geom2="RJ45_Male_4"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_7" geom2="RJ45_Male_5"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      
+      <pair geom1="RJ45_Female_8" geom2="RJ45_Male_0"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_8" geom2="RJ45_Male_1"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_8" geom2="RJ45_Male_2"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_8" geom2="RJ45_Male_3"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_8" geom2="RJ45_Male_4"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_8" geom2="RJ45_Male_5"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      
+      <pair geom1="RJ45_Female_9" geom2="RJ45_Male_0"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_9" geom2="RJ45_Male_1"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_9" geom2="RJ45_Male_2"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_9" geom2="RJ45_Male_3"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_9" geom2="RJ45_Male_4"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_9" geom2="RJ45_Male_5"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      
+      <pair geom1="RJ45_Female_10" geom2="RJ45_Male_0"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_10" geom2="RJ45_Male_1"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_10" geom2="RJ45_Male_2"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_10" geom2="RJ45_Male_3"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_10" geom2="RJ45_Male_4"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_10" geom2="RJ45_Male_5"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+                
+      <pair geom1="RJ45_Female_11" geom2="RJ45_Male_0"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_11" geom2="RJ45_Male_1"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_11" geom2="RJ45_Male_2"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_11" geom2="RJ45_Male_3"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_11" geom2="RJ45_Male_4"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+      <pair geom1="RJ45_Female_11" geom2="RJ45_Male_5"    
+          condim="3" friction="0.01 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.9 0.95 0.001"/>
+    
+      <pair geom1="RJ45_Female_12" geom2="RJ45_Male_0"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_12" geom2="RJ45_Male_1"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_12" geom2="RJ45_Male_2"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_12" geom2="RJ45_Male_3"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_12" geom2="RJ45_Male_4"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_12" geom2="RJ45_Male_5"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+    
+      <pair geom1="RJ45_Female_13" geom2="RJ45_Male_0"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_13" geom2="RJ45_Male_1"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_13" geom2="RJ45_Male_2"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_13" geom2="RJ45_Male_3"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_13" geom2="RJ45_Male_4"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_13" geom2="RJ45_Male_5"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+
+      <pair geom1="RJ45_Female_16" geom2="RJ45_Male_0"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_16" geom2="RJ45_Male_1"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_16" geom2="RJ45_Male_2"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_16" geom2="RJ45_Male_3"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_16" geom2="RJ45_Male_4"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_16" geom2="RJ45_Male_5"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+
+      <pair geom1="RJ45_Female_17" geom2="RJ45_Male_0"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_17" geom2="RJ45_Male_1"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_17" geom2="RJ45_Male_2"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_17" geom2="RJ45_Male_3"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_17" geom2="RJ45_Male_4"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_17" geom2="RJ45_Male_5"    
+          condim="3" friction="0.2 0.05 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+          
+      <pair geom1="RJ45_Female_18" geom2="RJ45_Male_0"    
+          condim="3" friction="0.02 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_18" geom2="RJ45_Male_1"    
+          condim="3" friction="0.02 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_18" geom2="RJ45_Male_2"    
+          condim="3" friction="0.02 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_18" geom2="RJ45_Male_3"    
+          condim="3" friction="0.02 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_18" geom2="RJ45_Male_4"    
+          condim="3" friction="0.02 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+      <pair geom1="RJ45_Female_18" geom2="RJ45_Male_5"    
+          condim="3" friction="0.02 0.005 0.0001" solref="0.001 0.5" 
+          solimp="0.99 0.99 0.001"/>
+  </contact>
+  
+  <sensor>
+      <touch name="RJ45_Top" site="RJ45_touch_Top"/>
+      <touch name="RJ45_Back" site="RJ45_touch_Back"/>
+      <touch name="RJ45_Front" site="RJ45_touch_Front"/>
+      <touch name="RJ45_Side" site="RJ45_touch_Side"/>
+  </sensor>
+  
+</mujoco>

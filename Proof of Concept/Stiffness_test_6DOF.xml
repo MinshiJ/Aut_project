@@ -1,0 +1,53 @@
+<mujoco model="Stiffness Test 6DOF">
+
+    <default>
+        <geom density="1" solimp="0.9 0.95 0.001"/>
+
+    </default>
+    <compiler coordinate="local" inertiafromgeom="true"/>
+    <option timestep="0.01"/>
+    <option gravity="0 0 0"/>
+
+
+    <worldbody>
+        <!-- floor -->
+        <geom type="plane" size="1 1 0.1" rgba="0.8 0.8 0.8 1"/>
+
+        <!-- box with joints with different stiffness (6-DOF) -->
+        <body name="body1">
+            <geom type="box" pos="0 0 1.1" size="0.1 0.1 0.1" rgba="1 0 0 1"/>
+            <joint name="pos_x" type="slide" pos="0 0 1.1" axis="1 0 0" stiffness="1" damping="1"/>            
+            <joint name="pos_y" type="slide" pos="0 0 1.1" axis="0 1 0" stiffness="5" damping="1"/>
+            <joint name="pos_z" type="slide" pos="0 0 1.1" axis="0 0 1" stiffness="10" damping="1"/>
+            <joint name="rot_x" type="hinge" pos="0 0 1.1" axis="1 0 0" stiffness="1.27324" damping="1"/>
+            <joint name="rot_y" type="hinge" pos="0 0 1.1" axis="0 1 0" stiffness="0.63662" damping="1"/>            
+            <joint name="rot_z" type="hinge" pos="0 0 1.1" axis="0 0 1" stiffness="0.31831" damping="1"/>            
+        </body>
+        <!-- body only for showing middle point with coordinate system -->
+        <body name="coordinate system">
+        </body>
+    </worldbody>
+
+
+    <!-- actuators for each joint -->
+    <actuator>
+        <motor name="pos_x" joint="pos_x" ctrlrange="-1 1" forcerange="-1 1"/>
+        <motor name="pos_y" joint="pos_y" ctrlrange="-1 1" forcerange="-1 1"/>
+        <motor name="pos_z" joint="pos_z" ctrlrange="-1 0" forcerange="-1 1"/>
+        
+        <motor name="rot_x" joint="rot_x" ctrlrange="-1 1" forcerange="-1 1"/>
+        <motor name="rot_y" joint="rot_y" ctrlrange="-1 1" forcerange="-1 1"/>
+        <motor name="rot_z" joint="rot_z" ctrlrange="-1 1" forcerange="-1 1"/>
+    </actuator>
+    
+
+    <!-- position sensors for each actuator -->
+    <sensor>
+        <jointpos name="sensor_pos_x" joint="pos_x"/>    
+        <jointpos name="sensor_pos_y" joint="pos_y"/>
+        <jointpos name="sensor_pos_z" joint="pos_z"/>
+        <jointpos name="sensor_rot_x" joint="rot_x"/>
+        <jointpos name="sensor_rot_y" joint="rot_y"/>
+        <jointpos name="sensor_rot_z" joint="rot_z"/>
+    </sensor>
+</mujoco>
