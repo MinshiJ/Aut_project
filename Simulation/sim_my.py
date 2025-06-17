@@ -38,8 +38,8 @@ class ParameterWindow:
         
         # 创建参数变量
         self.assembly_task = tk.StringVar(value="RJ45")
-        self.compliance_stiffness = tk.StringVar(value="50.0")
-        self.assembly_stiffness = tk.StringVar(value="2.0")
+        self.assembly_stiffness = tk.StringVar(value="50.0")
+        self.compliance_stiffness = tk.StringVar(value="2.0")
         self.z_stiffness = tk.StringVar(value="100.0")
         self.rotx_stiffness = tk.StringVar(value="100.0")
         self.roty_stiffness = tk.StringVar(value="100.0")
@@ -69,8 +69,8 @@ class ParameterWindow:
         
         # 创建刚度参数输入框
         stiffness_params = [
-            ("顺应方向刚度 (N/mm):", self.compliance_stiffness),
             ("装配方向刚度 (N/mm):", self.assembly_stiffness),
+            ("顺应方向刚度 (N/mm):", self.compliance_stiffness),
             ("Z方向刚度 (N/mm):", self.z_stiffness),
             ("X旋转刚度 (Nm/rad):", self.rotx_stiffness),
             ("Y旋转刚度 (Nm/rad):", self.roty_stiffness),
