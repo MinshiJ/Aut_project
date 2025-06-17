@@ -70,7 +70,7 @@ class ParameterWindow:
         # 创建刚度参数输入框
         stiffness_params = [
             ("装配方向刚度 (N/mm):", self.assembly_stiffness),
-            ("顺应方向刚度 (N/mm):", self.compliance_stiffness),
+            ("柔顺方向刚度 (N/mm):", self.compliance_stiffness),
             ("Z方向刚度 (N/mm):", self.z_stiffness),
             ("X旋转刚度 (Nm/rad):", self.rotx_stiffness),
             ("Y旋转刚度 (Nm/rad):", self.roty_stiffness),
